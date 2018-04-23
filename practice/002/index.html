@@ -1,0 +1,184 @@
+<style>
+    body {
+        margin: 0;
+        font-family: sans-serif;
+    }
+
+    .tip-trigger {
+        background: pink;
+    }
+
+    .tip {
+        position: fixed;
+        display: block;
+        background: #222;
+        color: #fff;
+        padding: 5px;
+        /*-webkit-border-radius: 3px;*/
+        /*-moz-border-radius: 3px;*/
+        /*border-radius: 3px;*/
+        -webkit-box-shadow: 0 0 2px #000;
+        -moz-box-shadow: 0 0 2px #000;
+        box-shadow: 0 0 2px #000;
+        opacity: .8;
+    }
+
+    .tip[hidden] {
+        opacity: 0;
+        /* 先凑合~~~ 哈哈 */
+    }
+</style>
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. At corporis dignissimos eum facilis Lorem ipsum dolor sit amet,
+consectetur adipisicing elit. At corporis dignissimos eum facilis
+<span data-tip-direction="top" data-tip="Yoooooo" class="tip-trigger">Yo</span>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. At corporis dignissimos eum facilis Lorem ipsum dolor sit amet,
+consectetur adipisicing elit. At corporis dignissimos eum facilis Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+At corporis dignissimos eum facilis Lorem ipsum dolor sit amet, consectetur adipisicing elit. At corporis dignissimos eum
+facilis Lorem ipsum dolor sit amet, consectetur adipisicing elit. At corporis dignissimos eum facilis Lorem ipsum dolor sit
+amet, con
+<span data-tip-direction="bottom" data-tip="呵呵哒" class="tip-trigger">hehe</span>sectetur adipisicing elit. At corporis dignissimos eum facilis Lorem ipsum dolor sit amet, consectetur adipisicing
+elit. At corporis dignissimos eum facilis Lorem ipsum dolor sit amet, consectetur adipisicing elit. At corporis dignissimos
+eum facilis Lorem ipsum dolor sit amet, consectetu
+<span data-tip-direction="vertical-left" data-tip="我素 whh" class="tip-trigger">whh</span>r adipisicing elit. At corporis dignissimos eum facilis Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+At corporis dignissimos eum facilis Lorem ipsum dolor sit amet, consectetur adipisi
+<span data-tip-direction="vertical-right"
+    data-tip="我素 lsd" class="tip-trigger">lsd</span>cing elit. At corporis dignissimos eum facilis Lorem ipsum dolor sit amet, consectetur adipisicing elit. At corporis
+dignissimos eum facilis Lorem ipsum dolor sit amet, consectetur adipisicing elit. At corporis
+<p>
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam illo, error atque officiis aperiam, qui alias facere reiciendis, corrupti laborum placeat vitae? Dolore, impedit. Iure esse exercitationem cupiditate fugiat beatae?
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Error ex dolores neque, blanditiis laudantium libero vitae nesciunt nam ad doloremque fugit voluptatem numquam a expedita veniam ipsum consequatur consequuntur inventore!
+    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore esse omnis accusantium laborum a maxime ipsam minima tempora nam corrupti ex explicabo perferendis animi, sunt vitae voluptate nostrum repellendus debitis!
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta ut totam quasi non esse ipsum iste eaque perferendis aperiam dolorum tempore accusamus incidunt harum, reiciendis explicabo accusantium quo. Exercitationem, dolorum!
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur provident ducimus incidunt accusamus, dicta expedita sunt officia, suscipit qui aut eaque, esse magnam excepturi. Aut debitis eius reiciendis odio blanditiis.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo temporibus dolorem dicta soluta nostrum! Quia molestias dicta quidem esse, quisquam ab? Nulla, tempora ratione adipisci saepe numquam vel illo qui!
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis fuga recusandae pariatur. Necessitatibus vero asperiores soluta perspiciatis commodi sit labore ut, neque assumenda harum, impedit, ullam numquam similique modi voluptatibus!
+    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem assumenda nulla, culpa, aperiam nihil est, incidunt quod dolorem a qui molestias sint laboriosam aut voluptate eligendi ipsa. Voluptate, nam fuga?
+</p>
+
+<script>
+    class Tooltip {
+        constructor(trigger) {
+            this.trigger = trigger;
+            this.tip = null;
+            this.ct = this.trigger.dataset;
+            this.init();
+            this.bind_event();
+        }
+        init() {
+            this.tip = document.createElement("div");
+            this.tip.classList.add("tip");
+            this.tip.innerText = this.ct.tip;
+            document.body.appendChild(this.tip);
+            this.exceed_bound();
+            this.hide();
+        }
+        show() {
+            this.tip.hidden = false;
+            this.set_direction(this.ct.tipDirection);
+            this.exceed_bound();
+        }
+        hide() {
+            this.tip.hidden = true;
+        }
+        set_direction(dir) {
+            let {
+                trigger_pos,
+                tip_pos,
+                window_w
+            } = this.get_info();
+            this.tip.style.left = trigger_pos.left + trigger_pos.width / 2 - tip_pos.width / 2;
+            switch (dir) {
+                case "top":
+                    this.tip.style.top = trigger_pos.top - tip_pos.height - 5;
+                    break;
+                case "bottom":
+                    this.tip.style.top = trigger_pos.top + trigger_pos.height + 5;
+                    break;
+                case "left":
+                    this.tip.style.left = window_w - tip_pos.width - 5;
+                    break;
+                case "right":
+                    this.tip.style.left = 5 + 'px';
+                    break;
+                case "vertical-left":
+                    this.tip.style.left = trigger_pos.left - tip_pos.width - 5;
+                    this.tip.style.top = trigger_pos.top - 5;
+                    break;
+                case "vertical-right":
+                    this.tip.style.left = trigger_pos.right + 5;
+                    this.tip.style.top = trigger_pos.top - 5;
+                    break;
+            }
+        }
+        get_info() {
+            let trigger_pos = this.trigger.getBoundingClientRect();
+            let tip_pos = this.tip.getBoundingClientRect();
+            let window_h = document.body.clientHeight;
+            let window_w = document.body.clientWidth;
+            return {
+                trigger_pos: trigger_pos,
+                tip_pos: tip_pos,
+                window_h: window_h,
+                window_w: window_w,
+                exceed_top: (trigger_pos.top - tip_pos.height - 5) < 0,
+                exceed_bottom: (trigger_pos.bottom + tip_pos.height + 5) > window_h,
+                exceed_left: (trigger_pos.left - tip_pos.width) < 0,
+                exceed_half_left: (trigger_pos.left - tip_pos.width / 2) < 0,
+                exceed_right: (trigger_pos.right + tip_pos.width) > window_w,
+                exceed_half_right: (trigger_pos.right + tip_pos.width / 2) > window_w
+            };
+        }
+        exceed_bound() {
+            let {
+                exceed_top,
+                exceed_bottom,
+                exceed_left,
+                exceed_half_left,
+                exceed_right,
+                exceed_half_right
+            } = this.get_info();
+            if ((exceed_top || exceed_bottom) &&
+                (!(exceed_top && exceed_bottom))) {
+                if (exceed_top) {
+                    this.set_direction("bottom");
+                } else if (exceed_bottom) {
+                    this.set_direction("top");
+                }
+            }
+            if ((exceed_half_left || exceed_half_right) &&
+                (!(exceed_half_left && exceed_half_right))) {
+                if (exceed_half_left) {
+                    this.set_direction("right");
+                } else if (exceed_half_right) {
+                    this.set_direction("left");
+                }
+            }
+            if (exceed_left && exceed_right) {
+                if (!exceed_top) {
+                    this.set_direction("top");
+                } else if (!exceed_bottom) {
+                    this.set_direction("bottom");
+                } else {
+                    this.hide();
+                }
+            }
+            if (exceed_top && exceed_bottom) {
+                if (!exceed_right) {
+                    this.set_direction("vertical-right");
+                } else if (!exceed_left) {
+                    this.set_direction("vertical-left");
+                } else {
+                    this.hide();
+                }
+            }
+        }
+        bind_event() {
+            let __self__ = this;
+            this.trigger.addEventListener("mouseenter", e => __self__.show());
+            this.trigger.addEventListener("mouseleave", e => __self__.hide());
+        }
+    }
+    const trigger_list = document.querySelectorAll(".tip-trigger");
+    trigger_list.forEach(el => new Tooltip(el));
+</script>
